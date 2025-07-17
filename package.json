@@ -1,0 +1,25 @@
+{
+  "name": "demo-contracts",
+  "version": "1.0.0",
+  "description": "Smart contract demo with Sepolia deployment support",
+  "scripts": {
+    "node": "npx hardhat node",
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "deploy": "npx hardhat ignition deploy ignition/modules/LockLocal.ts --network localhost",
+    "deploy:reset": "npx hardhat ignition deploy ignition/modules/LockLocal.ts --network localhost --reset",
+    "deploy:sepolia": "npx hardhat ignition deploy ignition/modules/LockSepolia.ts --network sepolia",
+    "deploy:sepolia:reset": "npx hardhat ignition deploy ignition/modules/LockSepolia.ts --network sepolia --reset",
+    "verify": "npx hardhat verify",
+    "verify:sepolia": "npx hardhat verify --network sepolia",
+    "console": "npx hardhat console --network localhost",
+    "console:sepolia": "npx hardhat console --network sepolia",
+    "clean": "npx hardhat clean",
+    "reset": "npm run clean && npm run compile"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.0.0",
+    "hardhat": "^2.25.0",
+    "dotenv": "^16.3.1"
+  }
+}
