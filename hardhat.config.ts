@@ -25,6 +25,13 @@ const config: HardhatUserConfig = {
     apiKey: {
       sepolia: process.env.ETHERSCAN_API_KEY || ""
     }
+  },
+  gasReporter: {
+    enabled: true,
+    currency: 'USD',
+    gasPrice: 20,
+    showMethodSig: true,
+    coinmarketcap: 'YOUR_API_KEY', // Add this for real-time USD rates
   }
 };
 
