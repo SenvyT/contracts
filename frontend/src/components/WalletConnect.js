@@ -1,12 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import walletService from '../utils/walletService';
 import contractConfig from '../utils/contractConfig';
 
 const WalletConnect = ({ onConnect, onDisconnect }) => {
+  console.log('WalletConnect: onDisconnect prop:', !!onDisconnect);
   const [isConnecting, setIsConnecting] = useState(false);
   const [account, setAccount] = useState(null);
   const [balance, setBalance] = useState('0');
   const [error, setError] = useState('');
+
+  const disconnectWallet = useCallback(() => {
+    console.log('WalletConnect: Disconnect button clicked');
+    walletService.disconnect();
+    setAccount(null);
+    setBalance('0');
+    setError('');
+    console.log('WalletConnect: Calling onDisconnect callback');
+    onDisconnect && onDisconnect();
+    console.log('WalletConnect: Disconnect completed');
+  }, [onDisconnect]);
 
   useEffect(() => {
     checkConnection();
@@ -48,7 +60,7 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
         window.ethereum.removeListener('chainChanged', handleChainChanged);
       }
     };
-  }, [onConnect]);
+  }, [onConnect, onDisconnect, disconnectWallet]);
 
   const checkConnection = async () => {
     console.log('Checking wallet connection...');
@@ -119,15 +131,6 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
     }
   };
 
-  const disconnectWallet = () => {
-    console.log('Disconnecting wallet');
-    walletService.disconnect();
-    setAccount(null);
-    setBalance('0');
-    setError('');
-    onDisconnect && onDisconnect();
-  };
-
   const formatAddress = (address) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
@@ -157,7 +160,14 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
           </div>
           <button 
             className="button secondary" 
-            onClick={disconnectWallet}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Disconnect button clicked!');
+              disconnectWallet();
+            }}
+            style={{ cursor: 'pointer' }}
           >
             Disconnect Wallet
           </button>

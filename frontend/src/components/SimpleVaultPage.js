@@ -148,6 +148,7 @@ const SimpleVaultPage = () => {
   };
 
   const handleWalletDisconnect = () => {
+    console.log('SimpleVaultPage: Wallet disconnected');
     setIsWalletConnected(false);
     setContract(null);
     setVaultInfo({

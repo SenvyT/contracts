@@ -143,10 +143,12 @@ class WalletService {
 
   // Disconnect
   disconnect() {
+    console.log('WalletService: Disconnecting wallet');
     this.provider = null;
     this.signer = null;
     this.isConnected = false;
     this.clearConnectionState();
+    console.log('WalletService: Wallet disconnected successfully');
   }
 
   // Get connection status

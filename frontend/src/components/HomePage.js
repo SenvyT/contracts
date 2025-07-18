@@ -52,6 +52,7 @@ const HomePage = () => {
   };
 
   const handleWalletDisconnect = () => {
+    console.log('HomePage: Wallet disconnected');
     setIsWalletConnected(false);
   };
 

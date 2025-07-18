@@ -33,6 +33,7 @@ const LockContractPage = () => {
   };
 
   const handleDisconnect = () => {
+    console.log('LockContractPage: Wallet disconnected');
     setIsConnected(false);
   };
 
