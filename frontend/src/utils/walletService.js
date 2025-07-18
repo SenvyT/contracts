@@ -61,10 +61,17 @@ class WalletService {
 
       // Check if the same account is still connected
       const accounts = await provider.request({ method: 'eth_accounts' });
-      if (accounts.length === 0) return null;
+      if (accounts.length === 0) {
+        console.log('No accounts found in MetaMask');
+        return null;
+      }
 
       const currentAddress = accounts[0];
+      console.log('Current MetaMask address:', currentAddress);
+      console.log('Saved address:', savedState.address);
+      
       if (currentAddress.toLowerCase() !== savedState.address.toLowerCase()) {
+        console.log('Address mismatch, clearing saved state');
         this.clearConnectionState();
         return null;
       }
@@ -73,6 +80,8 @@ class WalletService {
       this.provider = new ethers.BrowserProvider(provider);
       this.signer = await this.provider.getSigner();
       this.isConnected = true;
+
+      console.log('Successfully restored wallet connection');
 
       return {
         success: true,
@@ -147,6 +156,24 @@ class WalletService {
       hasProvider: !!this.provider,
       hasSigner: !!this.signer
     };
+  }
+
+  // Check if MetaMask is already connected (without requesting accounts)
+  async checkMetaMaskConnection() {
+    try {
+      const provider = await detectEthereumProvider();
+      if (!provider) return null;
+
+      // Check if already connected without requesting accounts
+      const accounts = await provider.request({ method: 'eth_accounts' });
+      if (accounts.length > 0) {
+        return accounts[0];
+      }
+      return null;
+    } catch (error) {
+      console.error('Error checking MetaMask connection:', error);
+      return null;
+    }
   }
 }
 

@@ -147,6 +147,32 @@ const SimpleVaultPage = () => {
     }
   };
 
+  const handleWalletDisconnect = () => {
+    setIsWalletConnected(false);
+    setContract(null);
+    setVaultInfo({
+      name: '',
+      totalDeposits: '0',
+      totalWithdrawals: '0',
+      vaultBalance: '0',
+      owner: '',
+      isOwner: false
+    });
+    setUserInfo({
+      totalDeposited: '0',
+      totalWithdrawn: '0',
+      remainingBalance: '0',
+      isActive: false
+    });
+    setFormData({
+      depositAmount: '',
+      withdrawAmount: '',
+      newVaultName: ''
+    });
+    setError('');
+    setSuccess('');
+  };
+
   const handleDeposit = async () => {
     if (!contract || !formData.depositAmount) return;
 
@@ -256,7 +282,7 @@ const SimpleVaultPage = () => {
 
       {/* MetaMask Connect Header */}
       <div className="wallet-section">
-        <WalletConnect onConnect={handleWalletConnect} />
+        <WalletConnect onConnect={handleWalletConnect} onDisconnect={handleWalletDisconnect} />
       </div>
 
       {error && (
@@ -277,6 +303,9 @@ const SimpleVaultPage = () => {
         <div className="card">
           <h2>Connect Your Wallet</h2>
           <p>Please connect your MetaMask wallet to interact with the SimpleVault contract.</p>
+          <div className="status info">
+            <strong>Note:</strong> You need to connect your wallet to view vault information and perform transactions.
+          </div>
         </div>
       ) : !contract ? (
         <div className="card">

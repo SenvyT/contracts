@@ -32,6 +32,10 @@ const LockContractPage = () => {
     setIsConnected(true);
   };
 
+  const handleDisconnect = () => {
+    setIsConnected(false);
+  };
+
   const handleActionComplete = () => {
     // Refresh contract info after actions
     window.location.reload();
@@ -67,13 +71,21 @@ const LockContractPage = () => {
         <p>A time-locked Ethereum smart contract with a modern React frontend</p>
       </div>
 
-      <WalletConnect onConnect={handleConnect} />
+      <WalletConnect onConnect={handleConnect} onDisconnect={handleDisconnect} />
 
-      {isConnected && (
+      {isConnected ? (
         <>
           <ContractInfo />
           <ContractActions onActionComplete={handleActionComplete} />
         </>
+      ) : (
+        <div className="card">
+          <h2>Wallet Required</h2>
+          <p>Please connect your MetaMask wallet to interact with the Lock smart contract.</p>
+          <div className="status info">
+            <strong>Note:</strong> You need to connect your wallet to view contract information and perform actions.
+          </div>
+        </div>
       )}
 
       {/* Footer */}

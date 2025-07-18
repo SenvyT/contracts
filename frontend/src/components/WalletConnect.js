@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import walletService from '../utils/walletService';
 import contractConfig from '../utils/contractConfig';
 
-const WalletConnect = ({ onConnect }) => {
+const WalletConnect = ({ onConnect, onDisconnect }) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [account, setAccount] = useState(null);
   const [balance, setBalance] = useState('0');
@@ -10,12 +10,79 @@ const WalletConnect = ({ onConnect }) => {
 
   useEffect(() => {
     checkConnection();
+    
+    // Listen for MetaMask account changes
+    const handleAccountsChanged = (accounts) => {
+      console.log('MetaMask accounts changed:', accounts);
+      if (accounts.length === 0) {
+        // User disconnected
+        disconnectWallet();
+      } else {
+        // User switched accounts
+        const newAddress = accounts[0];
+        walletService.saveConnectionState(newAddress);
+        setAccount(newAddress);
+        walletService.getBalance(newAddress).then(setBalance);
+        // Notify parent component about account change
+        onConnect && onConnect();
+      }
+    };
+
+    // Listen for chain changes
+    const handleChainChanged = (chainId) => {
+      console.log('MetaMask chain changed:', chainId);
+      // Reload the page when chain changes
+      window.location.reload();
+    };
+
+    // Add event listeners
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
+    }
+
+    // Cleanup
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        window.ethereum.removeListener('chainChanged', handleChainChanged);
+      }
+    };
   }, [onConnect]);
 
   const checkConnection = async () => {
-    // First try to restore saved connection
+    console.log('Checking wallet connection...');
+    
+    // First check if MetaMask is already connected
+    const connectedAddress = await walletService.checkMetaMaskConnection();
+    if (connectedAddress) {
+      console.log('MetaMask already connected:', connectedAddress);
+      
+      // Check if this matches our saved connection
+      const savedConnection = await walletService.checkSavedConnection();
+      if (savedConnection && savedConnection.success) {
+        console.log('Restored saved connection');
+        setAccount(savedConnection.address);
+        const accountBalance = await walletService.getBalance(savedConnection.address);
+        setBalance(accountBalance);
+        onConnect && onConnect();
+        return;
+      } else {
+        // MetaMask is connected but we don't have it saved, so save it
+        console.log('Saving new MetaMask connection');
+        walletService.saveConnectionState(connectedAddress);
+        setAccount(connectedAddress);
+        const accountBalance = await walletService.getBalance(connectedAddress);
+        setBalance(accountBalance);
+        onConnect && onConnect();
+        return;
+      }
+    }
+
+    // If no MetaMask connection, try to restore from localStorage
     const savedConnection = await walletService.checkSavedConnection();
     if (savedConnection && savedConnection.success) {
+      console.log('Restored connection from localStorage');
       setAccount(savedConnection.address);
       const accountBalance = await walletService.getBalance(savedConnection.address);
       setBalance(accountBalance);
@@ -23,20 +90,11 @@ const WalletConnect = ({ onConnect }) => {
       return;
     }
 
-    // Fallback to checking current connection status
-    const status = walletService.getConnectionStatus();
-    if (status.isConnected) {
-      const currentAccount = await walletService.getCurrentAccount();
-      if (currentAccount) {
-        setAccount(currentAccount);
-        const accountBalance = await walletService.getBalance(currentAccount);
-        setBalance(accountBalance);
-        onConnect && onConnect();
-      }
-    }
+    console.log('No wallet connection found');
   };
 
   const connectWallet = async () => {
+    console.log('Connecting wallet...');
     setIsConnecting(true);
     setError('');
 
@@ -44,14 +102,17 @@ const WalletConnect = ({ onConnect }) => {
       const result = await walletService.connect();
       
       if (result.success) {
+        console.log('Wallet connected successfully:', result.address);
         setAccount(result.address);
         const accountBalance = await walletService.getBalance(result.address);
         setBalance(accountBalance);
         onConnect && onConnect();
       } else {
+        console.error('Wallet connection failed:', result.error);
         setError(result.error);
       }
     } catch (err) {
+      console.error('Wallet connection error:', err);
       setError(err.message);
     } finally {
       setIsConnecting(false);
@@ -59,10 +120,12 @@ const WalletConnect = ({ onConnect }) => {
   };
 
   const disconnectWallet = () => {
+    console.log('Disconnecting wallet');
     walletService.disconnect();
     setAccount(null);
     setBalance('0');
     setError('');
+    onDisconnect && onDisconnect();
   };
 
   const formatAddress = (address) => {

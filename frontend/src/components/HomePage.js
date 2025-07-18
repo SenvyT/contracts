@@ -51,6 +51,10 @@ const HomePage = () => {
     setIsWalletConnected(true);
   };
 
+  const handleWalletDisconnect = () => {
+    setIsWalletConnected(false);
+  };
+
   if (isCheckingConnection) {
     return (
       <div className="container">
@@ -74,11 +78,11 @@ const HomePage = () => {
 
       {/* MetaMask Connect Header */}
       <div className="wallet-section">
-        <WalletConnect onConnect={handleWalletConnect} />
+        <WalletConnect onConnect={handleWalletConnect} onDisconnect={handleWalletDisconnect} />
       </div>
 
       {/* Contracts List - Only shown after wallet connection */}
-      {isWalletConnected && (
+      {isWalletConnected ? (
         <div className="card">
           <h2>Available Contracts</h2>
           <div className="contracts-list">
@@ -103,6 +107,14 @@ const HomePage = () => {
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      ) : (
+        <div className="card">
+          <h2>Connect Your Wallet</h2>
+          <p>Please connect your MetaMask wallet to view and interact with available smart contracts.</p>
+          <div className="status info">
+            <strong>Note:</strong> You need to connect your wallet to access the contract interfaces.
           </div>
         </div>
       )}
