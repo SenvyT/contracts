@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import WalletConnect from './WalletConnect';
-import walletService from '../utils/walletService';
+import web3Service from '../utils/web3';
 
 const HomePage = () => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
@@ -36,7 +36,7 @@ const HomePage = () => {
   const checkInitialConnection = async () => {
     try {
       // Check for saved connection
-      const savedConnection = await walletService.checkSavedConnection();
+      const savedConnection = await web3Service.checkSavedConnection();
       if (savedConnection && savedConnection.success) {
         setIsWalletConnected(true);
       }

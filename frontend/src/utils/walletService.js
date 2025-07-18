@@ -39,7 +39,7 @@ class WalletService {
     try {
       localStorage.removeItem(this.connectionKey);
     } catch (error) {
-      console.error('Failed to clear connection state:', error);
+      console.error('WalletService: Failed to clear connection state:', error);
     }
   }
 
@@ -143,12 +143,17 @@ class WalletService {
 
   // Disconnect
   disconnect() {
-    console.log('WalletService: Disconnecting wallet');
-    this.provider = null;
-    this.signer = null;
-    this.isConnected = false;
-    this.clearConnectionState();
-    console.log('WalletService: Wallet disconnected successfully');
+    console.log('WalletService: Disconnecting wallet...');
+    
+    try {
+      this.provider = null;
+      this.signer = null;
+      this.isConnected = false;
+      this.clearConnectionState();
+      console.log('WalletService: Wallet disconnected successfully');
+    } catch (error) {
+      console.error('WalletService: Error in disconnect method:', error);
+    }
   }
 
   // Get connection status

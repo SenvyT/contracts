@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import walletService from '../utils/walletService';
+import web3Service from '../utils/web3';
 import contractConfig from '../utils/contractConfig';
 
 const WalletConnect = ({ onConnect, onDisconnect }) => {
@@ -10,14 +10,22 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
   const [error, setError] = useState('');
 
   const disconnectWallet = useCallback(() => {
-    console.log('WalletConnect: Disconnect button clicked');
-    walletService.disconnect();
-    setAccount(null);
-    setBalance('0');
-    setError('');
-    console.log('WalletConnect: Calling onDisconnect callback');
-    onDisconnect && onDisconnect();
-    console.log('WalletConnect: Disconnect completed');
+    console.log('WalletConnect: Disconnecting wallet...');
+    
+    try {
+      web3Service.disconnect();
+      setAccount(null);
+      setBalance('0');
+      setError('');
+      
+      if (onDisconnect) {
+        onDisconnect();
+      }
+      
+      console.log('WalletConnect: Wallet disconnected successfully');
+    } catch (error) {
+      console.error('WalletConnect: Error in disconnectWallet:', error);
+    }
   }, [onDisconnect]);
 
   useEffect(() => {
@@ -32,9 +40,9 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
       } else {
         // User switched accounts
         const newAddress = accounts[0];
-        walletService.saveConnectionState(newAddress);
+        web3Service.saveConnectionState(newAddress);
         setAccount(newAddress);
-        walletService.getBalance(newAddress).then(setBalance);
+        web3Service.getBalance(newAddress).then(setBalance);
         // Notify parent component about account change
         onConnect && onConnect();
       }
@@ -65,38 +73,12 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
   const checkConnection = async () => {
     console.log('Checking wallet connection...');
     
-    // First check if MetaMask is already connected
-    const connectedAddress = await walletService.checkMetaMaskConnection();
-    if (connectedAddress) {
-      console.log('MetaMask already connected:', connectedAddress);
-      
-      // Check if this matches our saved connection
-      const savedConnection = await walletService.checkSavedConnection();
-      if (savedConnection && savedConnection.success) {
-        console.log('Restored saved connection');
-        setAccount(savedConnection.address);
-        const accountBalance = await walletService.getBalance(savedConnection.address);
-        setBalance(accountBalance);
-        onConnect && onConnect();
-        return;
-      } else {
-        // MetaMask is connected but we don't have it saved, so save it
-        console.log('Saving new MetaMask connection');
-        walletService.saveConnectionState(connectedAddress);
-        setAccount(connectedAddress);
-        const accountBalance = await walletService.getBalance(connectedAddress);
-        setBalance(accountBalance);
-        onConnect && onConnect();
-        return;
-      }
-    }
-
-    // If no MetaMask connection, try to restore from localStorage
-    const savedConnection = await walletService.checkSavedConnection();
+    // Check if there's a valid saved connection
+    const savedConnection = await web3Service.checkSavedConnection();
     if (savedConnection && savedConnection.success) {
       console.log('Restored connection from localStorage');
       setAccount(savedConnection.address);
-      const accountBalance = await walletService.getBalance(savedConnection.address);
+      const accountBalance = await web3Service.getBalance(savedConnection.address);
       setBalance(accountBalance);
       onConnect && onConnect();
       return;
@@ -111,12 +93,12 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
     setError('');
 
     try {
-      const result = await walletService.connect();
+      const result = await web3Service.connect();
       
       if (result.success) {
         console.log('Wallet connected successfully:', result.address);
         setAccount(result.address);
-        const accountBalance = await walletService.getBalance(result.address);
+        const accountBalance = await web3Service.getBalance(result.address);
         setBalance(accountBalance);
         onConnect && onConnect();
       } else {
@@ -165,9 +147,14 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
               e.preventDefault();
               e.stopPropagation();
               console.log('Disconnect button clicked!');
-              disconnectWallet();
+              try {
+                disconnectWallet();
+              } catch (error) {
+                console.error('Error in disconnectWallet:', error);
+              }
             }}
             style={{ cursor: 'pointer' }}
+            data-testid="disconnect-button"
           >
             Disconnect Wallet
           </button>

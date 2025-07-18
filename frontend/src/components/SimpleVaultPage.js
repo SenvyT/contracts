@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import WalletConnect from './WalletConnect';
-import walletService from '../utils/walletService';
+import web3Service from '../utils/web3';
 import simpleVaultConfig from '../utils/simpleVaultConfig';
 import { ethers } from 'ethers';
 
@@ -42,7 +42,7 @@ const SimpleVaultPage = () => {
       setIsLoading(true);
       
       // Check wallet connection
-      const savedConnection = await walletService.checkSavedConnection();
+      const savedConnection = await web3Service.checkSavedConnection();
       if (savedConnection && savedConnection.success) {
         setIsWalletConnected(true);
         await initializeContract();
@@ -63,9 +63,9 @@ const SimpleVaultPage = () => {
         return;
       }
 
-      // Get the provider and signer from walletService
-      const provider = walletService.provider;
-      const signer = walletService.signer;
+      // Get the provider and signer from web3Service
+      const provider = web3Service.provider;
+      const signer = web3Service.signer;
       
       if (!provider || !signer) {
         setError('Wallet not connected properly');
@@ -97,7 +97,7 @@ const SimpleVaultPage = () => {
         contractInstance.owner()
       ]);
 
-      const currentAccount = await walletService.getCurrentAccount();
+      const currentAccount = await web3Service.getCurrentAccount();
       const isOwner = currentAccount && currentAccount.toLowerCase() === owner.toLowerCase();
 
       setVaultInfo({
@@ -115,7 +115,7 @@ const SimpleVaultPage = () => {
 
   const loadUserInfo = async (contractInstance) => {
     try {
-      const currentAccount = await walletService.getCurrentAccount();
+      const currentAccount = await web3Service.getCurrentAccount();
       if (!currentAccount) return;
 
       const userInfo = await contractInstance.getUserInfo(currentAccount);
@@ -132,8 +132,8 @@ const SimpleVaultPage = () => {
 
   const handleWalletConnect = async () => {
     try {
-      // Connect wallet using walletService
-      const connectionResult = await walletService.connect();
+      // Connect wallet using web3Service
+      const connectionResult = await web3Service.connect();
       
       if (connectionResult.success) {
         setIsWalletConnected(true);
@@ -183,7 +183,7 @@ const SimpleVaultPage = () => {
       setSuccess('');
 
       const amount = ethers.parseEther(formData.depositAmount);
-      const currentAccount = await walletService.getCurrentAccount();
+      const currentAccount = await web3Service.getCurrentAccount();
 
       const tx = await contract.deposit({ value: amount });
       await tx.wait();
@@ -209,7 +209,7 @@ const SimpleVaultPage = () => {
       setSuccess('');
 
       const amount = ethers.parseEther(formData.withdrawAmount);
-      const currentAccount = await walletService.getCurrentAccount();
+      const currentAccount = await web3Service.getCurrentAccount();
 
       const tx = await contract.withdraw(amount);
       await tx.wait();
@@ -234,7 +234,7 @@ const SimpleVaultPage = () => {
       setError('');
       setSuccess('');
 
-      const currentAccount = await walletService.getCurrentAccount();
+      const currentAccount = await web3Service.getCurrentAccount();
 
       const tx = await contract.changeVaultName(formData.newVaultName);
       await tx.wait();
