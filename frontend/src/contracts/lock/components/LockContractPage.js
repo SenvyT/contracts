@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import WalletConnect from './WalletConnect';
+import { Link, useNavigate } from 'react-router-dom';
+import { WalletConnect, web3Service, contractConfig } from '../../../common';
 import ContractInfo from './ContractInfo';
 import ContractActions from './ContractActions';
-import web3Service from '../utils/web3';
-import contractConfig from '../utils/contractConfig';
 
 const LockContractPage = () => {
+  const navigate = useNavigate();
   const [isConnected, setIsConnected] = useState(false);
   const [isCheckingConnection, setIsCheckingConnection] = useState(true);
 
@@ -33,8 +32,8 @@ const LockContractPage = () => {
   };
 
   const handleDisconnect = () => {
-    console.log('LockContractPage: Wallet disconnected');
     setIsConnected(false);
+    navigate('/');
   };
 
   const handleActionComplete = () => {
@@ -74,20 +73,8 @@ const LockContractPage = () => {
 
       <WalletConnect onConnect={handleConnect} onDisconnect={handleDisconnect} />
 
-      {isConnected ? (
-        <>
-          <ContractInfo />
-          <ContractActions onActionComplete={handleActionComplete} />
-        </>
-      ) : (
-        <div className="card">
-          <h2>Wallet Required</h2>
-          <p>Please connect your MetaMask wallet to interact with the Lock smart contract.</p>
-          <div className="status info">
-            <strong>Note:</strong> You need to connect your wallet to view contract information and perform actions.
-          </div>
-        </div>
-      )}
+      <ContractInfo />
+      <ContractActions onActionComplete={handleActionComplete} />
 
       {/* Footer */}
       <div className="card text-center">

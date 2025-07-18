@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import web3Service from '../utils/web3';
+import { web3Service } from '../../../common';
 
 const ContractInfo = () => {
   const [contractBalance, setContractBalance] = useState('0');
@@ -24,6 +24,7 @@ const ContractInfo = () => {
 
     try {
       const status = web3Service.getConnectionStatus();
+      
       if (!status.isConnected) {
         setError('Please connect your wallet first');
         setIsLoading(false);
@@ -96,6 +97,8 @@ const ContractInfo = () => {
       </div>
     );
   }
+
+
 
   return (
     <div className="card">

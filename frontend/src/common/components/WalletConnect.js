@@ -3,26 +3,17 @@ import web3Service from '../utils/web3';
 import contractConfig from '../utils/contractConfig';
 
 const WalletConnect = ({ onConnect, onDisconnect }) => {
-  console.log('WalletConnect: onDisconnect prop:', !!onDisconnect);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [account, setAccount] = useState(null);
-  const [balance, setBalance] = useState('0');
   const [error, setError] = useState('');
 
   const disconnectWallet = useCallback(() => {
-    console.log('WalletConnect: Disconnecting wallet...');
-    
     try {
       web3Service.disconnect();
-      setAccount(null);
-      setBalance('0');
       setError('');
       
       if (onDisconnect) {
         onDisconnect();
       }
-      
-      console.log('WalletConnect: Wallet disconnected successfully');
     } catch (error) {
       console.error('WalletConnect: Error in disconnectWallet:', error);
     }
@@ -33,7 +24,6 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
     
     // Listen for MetaMask account changes
     const handleAccountsChanged = (accounts) => {
-      console.log('MetaMask accounts changed:', accounts);
       if (accounts.length === 0) {
         // User disconnected
         disconnectWallet();
@@ -41,8 +31,6 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
         // User switched accounts
         const newAddress = accounts[0];
         web3Service.saveConnectionState(newAddress);
-        setAccount(newAddress);
-        web3Service.getBalance(newAddress).then(setBalance);
         // Notify parent component about account change
         onConnect && onConnect();
       }
@@ -50,7 +38,6 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
 
     // Listen for chain changes
     const handleChainChanged = (chainId) => {
-      console.log('MetaMask chain changed:', chainId);
       // Reload the page when chain changes
       window.location.reload();
     };
@@ -71,24 +58,15 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
   }, [onConnect, onDisconnect, disconnectWallet]);
 
   const checkConnection = async () => {
-    console.log('Checking wallet connection...');
-    
     // Check if there's a valid saved connection
     const savedConnection = await web3Service.checkSavedConnection();
     if (savedConnection && savedConnection.success) {
-      console.log('Restored connection from localStorage');
-      setAccount(savedConnection.address);
-      const accountBalance = await web3Service.getBalance(savedConnection.address);
-      setBalance(accountBalance);
       onConnect && onConnect();
       return;
     }
-
-    console.log('No wallet connection found');
   };
 
   const connectWallet = async () => {
-    console.log('Connecting wallet...');
     setIsConnecting(true);
     setError('');
 
@@ -96,17 +74,11 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
       const result = await web3Service.connect();
       
       if (result.success) {
-        console.log('Wallet connected successfully:', result.address);
-        setAccount(result.address);
-        const accountBalance = await web3Service.getBalance(result.address);
-        setBalance(accountBalance);
         onConnect && onConnect();
       } else {
-        console.error('Wallet connection failed:', result.error);
         setError(result.error);
       }
     } catch (err) {
-      console.error('Wallet connection error:', err);
       setError(err.message);
     } finally {
       setIsConnecting(false);
@@ -122,7 +94,20 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
     return networkConfig;
   };
 
-  if (account) {
+  // Get connection status from web3Service
+  const connectionStatus = web3Service.getConnectionStatus();
+  const [accountInfo, setAccountInfo] = useState(null);
+  
+  // Fetch account info when connected
+  useEffect(() => {
+    if (connectionStatus.isConnected) {
+      web3Service.getCurrentAccountInfo().then(setAccountInfo);
+    } else {
+      setAccountInfo(null);
+    }
+  }, [connectionStatus.isConnected]);
+  
+  if (connectionStatus.isConnected && accountInfo) {
     const networkInfo = getNetworkInfo();
     return (
       <div className="card">
@@ -130,11 +115,11 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
         <div className="flex-column">
           <div className="flex">
             <strong>Address:</strong>
-            <span>{formatAddress(account)}</span>
+            <span>{formatAddress(accountInfo.address)}</span>
           </div>
           <div className="flex">
             <strong>Balance:</strong>
-            <span>{parseFloat(balance).toFixed(4)} {networkInfo.currencySymbol}</span>
+            <span>{parseFloat(accountInfo.balance).toFixed(4)} {networkInfo.currencySymbol}</span>
           </div>
           <div className="flex">
             <strong>Network:</strong>
@@ -146,7 +131,6 @@ const WalletConnect = ({ onConnect, onDisconnect }) => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log('Disconnect button clicked!');
               try {
                 disconnectWallet();
               } catch (error) {

@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './components/HomePage';
-import LockContractPage from './components/LockContractPage';
-import SimpleVaultPage from './components/SimpleVaultPage';
+import { HomePage } from './common';
+import { LockContractPage } from './contracts/lock';
+import { SimpleVaultPage } from './contracts/simplevault';
 
 function App() {
   return (

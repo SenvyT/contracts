@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import web3Service from '../utils/web3';
+import { web3Service } from '../../../common';
 
 const ContractActions = ({ onActionComplete }) => {
   const [isWithdrawing, setIsWithdrawing] = useState(false);

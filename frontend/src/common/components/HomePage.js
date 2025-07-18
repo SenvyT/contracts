@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import WalletConnect from './WalletConnect';
 import web3Service from '../utils/web3';
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [isCheckingConnection, setIsCheckingConnection] = useState(true);
 
@@ -52,8 +53,8 @@ const HomePage = () => {
   };
 
   const handleWalletDisconnect = () => {
-    console.log('HomePage: Wallet disconnected');
     setIsWalletConnected(false);
+    // Stay on home page when disconnecting from home page
   };
 
   if (isCheckingConnection) {
@@ -92,9 +93,7 @@ const HomePage = () => {
                 <div className="contract-info">
                   <span className="contract-icon">{contract.icon}</span>
                   <span className="contract-name">{contract.name}</span>
-                  <span className={`status-badge ${contract.status}`}>
-                    {contract.status === 'active' ? 'Active' : 'Coming Soon'}
-                  </span>
+                
                 </div>
                 
                 {contract.status === 'active' ? (
@@ -112,7 +111,6 @@ const HomePage = () => {
         </div>
       ) : (
         <div className="card">
-          <h2>Connect Your Wallet</h2>
           <p>Please connect your MetaMask wallet to view and interact with available smart contracts.</p>
           <div className="status info">
             <strong>Note:</strong> You need to connect your wallet to access the contract interfaces.
