@@ -1,0 +1,47 @@
+{
+  "name": "lock-contract-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Lock smart contract",
+  "private": true,
+  "dependencies": {
+    "@metamask/detect-provider": "^2.0.0",
+    "ethers": "^6.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.30.1",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "prestart": "node public/copy-artifacts.js",
+    "start": "react-scripts start",
+    "prebuild": "node public/copy-artifacts.js",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "copy-artifacts": "node public/copy-artifacts.js"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "typescript": "^4.9.5"
+  }
+}

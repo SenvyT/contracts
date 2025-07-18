@@ -15,8 +15,56 @@ yarn-error.log*
 /cache
 /artifacts
 
-#frontend files
-/frontend
+# Frontend build outputs (but keep source code)
+frontend/build/
+frontend/dist/
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Frontend cache and temporary files
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/.next/
+frontend/.nuxt/
+frontend/coverage/
+frontend/.nyc_output/
+frontend/.eslintcache
+frontend/.npm
+frontend/tmp/
+frontend/temp/
+
+# Frontend IDE and editor files
+frontend/.vscode/
+frontend/.idea/
+frontend/*.swp
+frontend/*.swo
+frontend/*~
+
+# Frontend logs
+frontend/logs/
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# Frontend test files
+frontend/*.test.js.snap
+
+# Frontend backup files
+frontend/*.bak
+frontend/*.backup
+
+# Frontend local development files
+frontend/*.local
+
+# Frontend contract artifacts (these are copied from parent directory)
+frontend/public/artifacts/
+frontend/public/ignition/
 
 # TypeChain files
 /typechain
