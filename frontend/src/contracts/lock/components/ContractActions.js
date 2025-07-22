@@ -4,6 +4,7 @@ import { web3Service } from '../../../common';
 const ContractActions = ({ onActionComplete }) => {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [canWithdraw, setCanWithdraw] = useState(false);
+  const [isWithdrawn, setIsWithdrawn] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
 
@@ -18,7 +19,9 @@ const ContractActions = ({ onActionComplete }) => {
       const status = web3Service.getConnectionStatus();
       if (status.isConnected) {
         const canWithdrawStatus = await web3Service.canWithdraw();
+        const withdrawnStatus = await web3Service.isWithdrawn();
         setCanWithdraw(canWithdrawStatus);
+        setIsWithdrawn(withdrawnStatus);
       }
     } catch (error) {
       console.error('Error checking withdrawal status:', error);
@@ -35,6 +38,10 @@ const ContractActions = ({ onActionComplete }) => {
       
       setMessage(`Withdrawal successful! Transaction hash: ${result.hash}`);
       setMessageType('success');
+      
+      // Update the withdrawn status immediately
+      setIsWithdrawn(true);
+      setCanWithdraw(false);
       
       onActionComplete && onActionComplete();
     } catch (error) {
@@ -62,19 +69,25 @@ const ContractActions = ({ onActionComplete }) => {
         </p>
         
         <div className="status info">
-          <strong>Status:</strong> {canWithdraw ? 'Ready to withdraw' : 'Cannot withdraw yet'}
+          <strong>Status:</strong> {
+            isWithdrawn ? 'Funds already withdrawn' : 
+            canWithdraw ? 'Ready to withdraw' : 
+            'Cannot withdraw yet'
+          }
         </div>
         
         <button 
-          className="button danger"
+          className={isWithdrawn ? "button disabled" : "button danger"}
           onClick={handleWithdraw}
-          disabled={!canWithdraw || isWithdrawing}
+          disabled={!canWithdraw || isWithdrawing || isWithdrawn}
         >
           {isWithdrawing ? (
             <>
               <span className="loading"></span>
               Withdrawing...
             </>
+          ) : isWithdrawn ? (
+            'Withdrawn'
           ) : (
             'Withdraw Funds'
           )}

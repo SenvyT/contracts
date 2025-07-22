@@ -7,6 +7,7 @@ pragma solidity ^0.8.28;
 contract Lock {
     uint public unlockTime;
     address payable public owner;
+    bool public isWithdrawn;
 
     event Withdrawal(uint amount, uint when);
 
@@ -18,17 +19,23 @@ contract Lock {
 
         unlockTime = _unlockTime;
         owner = payable(msg.sender);
+        isWithdrawn = false;
     }
 
     function withdraw() public {
         // Uncomment this line, and the import of "hardhat/console.sol", to print a log in your terminal
         // console.log("Unlock time is %o and block timestamp is %o", unlockTime, block.timestamp);
-
+        require(!isWithdrawn, "Withdrawal already processed");
         require(block.timestamp >= unlockTime, "You can't withdraw yet");
         require(msg.sender == owner, "You aren't the owner");
 
+        isWithdrawn = true;
         emit Withdrawal(address(this).balance, block.timestamp);
 
         owner.transfer(address(this).balance);
+    }
+
+    function getIsWithdrawn() public view returns (bool) {
+        return isWithdrawn;
     }
 }

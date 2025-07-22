@@ -401,15 +401,41 @@ class Web3Service {
       const owner = await this.lockContract.owner();
       console.log('Owner:', owner);
       
+      console.log('Getting isWithdrawn status...');
+      const isWithdrawn = await this.lockContract.isWithdrawn();
+      console.log('Is withdrawn:', isWithdrawn);
+      
       const currentAccount = await this.getCurrentAccount();
       console.log('Current account:', currentAccount);
       
-      const canWithdraw = currentTime >= unlockTime && owner.toLowerCase() === currentAccount.toLowerCase();
+      const canWithdraw = currentTime >= unlockTime && 
+                         owner.toLowerCase() === currentAccount.toLowerCase() && 
+                         !isWithdrawn;
       console.log('Can withdraw:', canWithdraw);
       
       return canWithdraw;
     } catch (error) {
       console.error('Error checking withdrawal status:', error);
+      return false;
+    }
+  }
+
+  // Check if funds have been withdrawn
+  async isWithdrawn() {
+    if (!this.signer) return false;
+    
+    try {
+      // Load contract config if not already loaded
+      if (!this.lockContract) {
+        const configLoaded = await this.loadContractConfigs();
+        if (!configLoaded) return false;
+        this.initializeContracts();
+      }
+      
+      const isWithdrawn = await this.lockContract.isWithdrawn();
+      return isWithdrawn;
+    } catch (error) {
+      console.error('Error checking isWithdrawn status:', error);
       return false;
     }
   }
