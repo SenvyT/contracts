@@ -2,18 +2,20 @@
 pragma solidity ^0.8.28;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title MyToken
- * @dev A simple ERC-20 token with initial minting in constructor
+ * @dev A simple ERC-20 token with initial minting in constructor and owner functionality
  * 
  * Features:
  * - Standard ERC-20 functionality
  * - Initial minting in constructor
+ * - Owner management
  * 
  * @author Your Name
  */
-contract MyToken is ERC20 {
+contract MyToken is ERC20, Ownable {
     
     // ============================================
     // EVENTS
@@ -38,7 +40,7 @@ contract MyToken is ERC20 {
         string memory name,
         string memory symbol,
         uint256 initialSupply
-    ) ERC20(name, symbol) {
+    ) ERC20(name, symbol) Ownable(msg.sender) {
         require(initialSupply > 0, "Initial supply must be greater than 0");
         
         // Mint initial supply to the deployer
