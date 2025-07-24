@@ -29,6 +29,16 @@ class ContractConfig {
         },
         address: null,
         abi: null
+      },
+      mytoken: {
+        artifactPath: '/artifacts/contracts/MyToken.sol/MyToken.json',
+        moduleNames: {
+          local: 'MyTokenLocalModule#MyToken',
+          testing: 'MyTokenSepoliaModule#MyToken',
+          production: 'MyTokenSepoliaModule#MyToken' // adjust if needed
+        },
+        address: null,
+        abi: null
       }
     };
   }

@@ -8,11 +8,14 @@ class Web3Service {
     this.signer = null;
     this.lockContract = null;
     this.simpleVaultContract = null;
+    this.myTokenContract = null;
     this.isConnected = false;
     this.lockContractAddress = null;
     this.lockContractABI = null;
     this.simpleVaultContractAddress = null;
     this.simpleVaultContractABI = null;
+    this.myTokenContractAddress = null;
+    this.myTokenContractABI = null;
     this.connectionKey = 'zerotheft_wallet_connection';
   }
 
@@ -248,6 +251,18 @@ class Web3Service {
         this.simpleVaultContractABI = null;
       }
 
+      // Try to load MyToken contract configuration (may not be deployed)
+      try {
+        const myTokenDeploymentInfo = await contractConfig.getDeploymentInfo('mytoken');
+        this.myTokenContractAddress = myTokenDeploymentInfo.address;
+        this.myTokenContractABI = myTokenDeploymentInfo.abi;
+        console.log('MyToken contract address set to:', this.myTokenContractAddress);
+      } catch (myTokenError) {
+        console.warn('MyToken contract not deployed:', myTokenError.message);
+        this.myTokenContractAddress = null;
+        this.myTokenContractABI = null;
+      }
+
       return true;
     } catch (error) {
       console.error('Failed to load contract configuration:', error);
@@ -278,6 +293,18 @@ class Web3Service {
         signer: !!this.signer,
         address: this.simpleVaultContractAddress,
         abi: !!this.simpleVaultContractABI
+      });
+    }
+
+    if (this.signer && this.myTokenContractAddress && this.myTokenContractABI) {
+      console.log('Initializing MyToken contract with address:', this.myTokenContractAddress);
+      this.myTokenContract = new ethers.Contract(this.myTokenContractAddress, this.myTokenContractABI, this.signer);
+      console.log('MyToken contract initialized successfully');
+    } else {
+      console.log('Cannot initialize MyToken contract - missing:', {
+        signer: !!this.signer,
+        address: this.myTokenContractAddress,
+        abi: !!this.myTokenContractABI
       });
     }
   }
@@ -603,6 +630,155 @@ class Web3Service {
       gasUsed: receipt.gasUsed.toString()
     };
   }
+
+  // ===== MyToken Contract Methods =====
+
+  // Get MyToken information
+  async getMyTokenInfo() {
+    if (!this.signer) return null;
+    
+    // Load contract config if not already loaded
+    if (!this.myTokenContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myTokenContractAddress) {
+        console.warn('MyToken contract not deployed');
+        return null;
+      }
+      this.initializeContracts();
+    }
+    
+    try {
+      const [name, symbol, decimals, totalSupply, maxSupply, price, owner, isPaused] = await Promise.all([
+        this.myTokenContract.name(),
+        this.myTokenContract.symbol(),
+        this.myTokenContract.decimals(),
+        this.myTokenContract.totalSupply(),
+        this.myTokenContract.maxSupply(),
+        this.myTokenContract.tokenPrice(),
+        this.myTokenContract.owner(),
+        this.myTokenContract.isPaused()
+      ]);
+
+      const currentAccount = await this.getCurrentAccount();
+      const isOwner = currentAccount && currentAccount.toLowerCase() === owner.toLowerCase();
+      const userBalance = await this.myTokenContract.balanceOf(currentAccount);
+
+      return {
+        name,
+        symbol,
+        decimals: decimals.toString(),
+        totalSupply: ethers.formatEther(totalSupply),
+        maxSupply: ethers.formatEther(maxSupply),
+        price: ethers.formatEther(price),
+        owner,
+        isOwner,
+        isPaused,
+        userBalance: ethers.formatEther(userBalance)
+      };
+    } catch (error) {
+      console.error('Error getting MyToken info:', error);
+      return null;
+    }
+  }
+
+  // Transfer MyToken
+  async transferMyToken(to, amount) {
+    if (!this.signer) throw new Error('Wallet not connected');
+    
+    // Load contract config if not already loaded
+    if (!this.myTokenContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myTokenContractAddress) {
+        throw new Error('MyToken contract is not deployed. Please deploy the contract first.');
+      }
+      this.initializeContracts();
+    }
+    
+    const amountWei = ethers.parseEther(amount.toString());
+    const tx = await this.myTokenContract.transfer(to, amountWei);
+    const receipt = await tx.wait();
+    
+    return {
+      success: true,
+      hash: receipt.hash,
+      gasUsed: receipt.gasUsed.toString()
+    };
+  }
+
+  // Burn MyToken
+  async burnMyToken(amount) {
+    if (!this.signer) throw new Error('Wallet not connected');
+    
+    // Load contract config if not already loaded
+    if (!this.myTokenContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myTokenContractAddress) {
+        throw new Error('MyToken contract is not deployed. Please deploy the contract first.');
+      }
+      this.initializeContracts();
+    }
+    
+    const amountWei = ethers.parseEther(amount.toString());
+    const tx = await this.myTokenContract.burn(amountWei);
+    const receipt = await tx.wait();
+    
+    return {
+      success: true,
+      hash: receipt.hash,
+      gasUsed: receipt.gasUsed.toString()
+    };
+  }
+
+  // Mint MyToken (owner only)
+  async mintMyToken(to, amount) {
+    if (!this.signer) throw new Error('Wallet not connected');
+    
+    // Load contract config if not already loaded
+    if (!this.myTokenContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myTokenContractAddress) {
+        throw new Error('MyToken contract is not deployed. Please deploy the contract first.');
+      }
+      this.initializeContracts();
+    }
+    
+    const amountWei = ethers.parseEther(amount.toString());
+    const tx = await this.myTokenContract.mint(to, amountWei);
+    const receipt = await tx.wait();
+    
+    return {
+      success: true,
+      hash: receipt.hash,
+      gasUsed: receipt.gasUsed.toString()
+    };
+  }
+
+  // Pause/Unpause MyToken (owner only)
+  async togglePauseMyToken() {
+    if (!this.signer) throw new Error('Wallet not connected');
+    
+    // Load contract config if not already loaded
+    if (!this.myTokenContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myTokenContractAddress) {
+        throw new Error('MyToken contract is not deployed. Please deploy the contract first.');
+      }
+      this.initializeContracts();
+    }
+    
+    const isPaused = await this.myTokenContract.isPaused();
+    const tx = isPaused ? await this.myTokenContract.unpause() : await this.myTokenContract.pause();
+    const receipt = await tx.wait();
+    
+    return {
+      success: true,
+      hash: receipt.hash,
+      gasUsed: receipt.gasUsed.toString(),
+      action: isPaused ? 'unpaused' : 'paused'
+    };
+  }
+
+
 
   // Listen for events
   async listenToEvents(callback) {

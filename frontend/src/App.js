@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { HomePage } from './common';
 import { LockContractPage } from './contracts/lock';
 import { SimpleVaultPage } from './contracts/simplevault';
+import { MyTokenPage } from './contracts/mytoken';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/contract/lock" element={<LockContractPage />} />
         <Route path="/contract/simplevault" element={<SimpleVaultPage />} />
+        <Route path="/contract/mytoken" element={<MyTokenPage />} />
       </Routes>
     </Router>
   );

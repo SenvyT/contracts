@@ -14,6 +14,11 @@
     "deploy:vault:reset": "npx hardhat ignition deploy ignition/modules/SimpleVaultLocal.ts --network localhost --reset",
     "deploy:vault:sepolia": "npx hardhat ignition deploy ignition/modules/SimpleVaultSepolia.ts --network sepolia",
     "deploy:vault:sepolia:reset": "npx hardhat ignition deploy ignition/modules/SimpleVaultSepolia.ts --network sepolia --reset",
+    "deploy:token": "npx hardhat ignition deploy ignition/modules/MyTokenLocal.ts --network localhost",
+    "deploy:token:reset": "npx hardhat ignition deploy ignition/modules/MyTokenLocal.ts --network localhost --reset",
+    "deploy:token:sepolia": "npx hardhat ignition deploy ignition/modules/MyTokenSepolia.ts --network sepolia",
+    "deploy:token:sepolia:reset": "npx hardhat ignition deploy ignition/modules/MyTokenSepolia.ts --network sepolia --reset",
+
     "verify": "npx hardhat verify",
     "verify:sepolia": "npx hardhat verify --network sepolia",
     "console": "npx hardhat console --network localhost",
@@ -28,6 +33,6 @@
     "hardhat": "^2.25.0"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^5.3.0"
+    "@openzeppelin/contracts": "^5.4.0"
   }
 }

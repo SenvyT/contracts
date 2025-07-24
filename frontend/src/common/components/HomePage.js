@@ -21,13 +21,12 @@ const HomePage = () => {
       status: 'active',
       icon: '🏦'
     },
-    // Future contracts can be added here
-    // {
-    //   id: 'token',
-    //   name: 'Token Contract',
-    //   status: 'coming-soon',
-    //   icon: '🪙'
-    // }
+    {
+      id: 'mytoken',
+      name: 'MyToken Contract',
+      status: 'active',
+      icon: '🪙'
+    }
   ];
 
   useEffect(() => {
