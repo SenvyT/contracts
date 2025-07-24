@@ -648,20 +648,61 @@ class Web3Service {
     }
     
     try {
-      const [name, symbol, decimals, totalSupply, maxSupply, price, owner, isPaused] = await Promise.all([
+      // Get basic ERC20 info (always available)
+      const [name, symbol, decimals, totalSupply] = await Promise.all([
         this.myTokenContract.name(),
         this.myTokenContract.symbol(),
         this.myTokenContract.decimals(),
-        this.myTokenContract.totalSupply(),
-        this.myTokenContract.maxSupply(),
-        this.myTokenContract.tokenPrice(),
-        this.myTokenContract.owner(),
-        this.myTokenContract.isPaused()
+        this.myTokenContract.totalSupply()
       ]);
 
       const currentAccount = await this.getCurrentAccount();
-      const isOwner = currentAccount && currentAccount.toLowerCase() === owner.toLowerCase();
       const userBalance = await this.myTokenContract.balanceOf(currentAccount);
+
+      // Initialize default values
+      let maxSupply = totalSupply;
+      let price = ethers.parseEther('0');
+      let owner = currentAccount;
+      let isOwner = false;
+      let isPaused = false;
+
+      // Check if advanced functions are available and call them
+      try {
+        // Check if maxSupply function exists
+        if (this.myTokenContract.maxSupply) {
+          maxSupply = await this.myTokenContract.maxSupply();
+        }
+      } catch (error) {
+        console.log('maxSupply function not available in contract');
+      }
+
+      try {
+        // Check if tokenPrice function exists
+        if (this.myTokenContract.tokenPrice) {
+          price = await this.myTokenContract.tokenPrice();
+        }
+      } catch (error) {
+        console.log('tokenPrice function not available in contract');
+      }
+
+      try {
+        // Check if owner function exists
+        if (this.myTokenContract.owner) {
+          owner = await this.myTokenContract.owner();
+          isOwner = currentAccount && currentAccount.toLowerCase() === owner.toLowerCase();
+        }
+      } catch (error) {
+        console.log('owner function not available in contract');
+      }
+
+      try {
+        // Check if isPaused function exists
+        if (this.myTokenContract.isPaused) {
+          isPaused = await this.myTokenContract.isPaused();
+        }
+      } catch (error) {
+        console.log('isPaused function not available in contract');
+      }
 
       return {
         name,
@@ -718,6 +759,11 @@ class Web3Service {
       this.initializeContracts();
     }
     
+    // Check if burn function exists
+    if (!this.myTokenContract.burn) {
+      throw new Error('Burn function not available in this contract version.');
+    }
+    
     const amountWei = ethers.parseEther(amount.toString());
     const tx = await this.myTokenContract.burn(amountWei);
     const receipt = await tx.wait();
@@ -742,6 +788,11 @@ class Web3Service {
       this.initializeContracts();
     }
     
+    // Check if mint function exists
+    if (!this.myTokenContract.mint) {
+      throw new Error('Mint function not available in this contract version.');
+    }
+    
     const amountWei = ethers.parseEther(amount.toString());
     const tx = await this.myTokenContract.mint(to, amountWei);
     const receipt = await tx.wait();
@@ -764,6 +815,11 @@ class Web3Service {
         throw new Error('MyToken contract is not deployed. Please deploy the contract first.');
       }
       this.initializeContracts();
+    }
+    
+    // Check if pause/unpause functions exist
+    if (!this.myTokenContract.pause || !this.myTokenContract.unpause || !this.myTokenContract.isPaused) {
+      throw new Error('Pause/Unpause functions not available in this contract version.');
     }
     
     const isPaused = await this.myTokenContract.isPaused();
