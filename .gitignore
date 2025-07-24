@@ -151,6 +151,5 @@ pids
 .tern-port
 
 
-/contracts_________
 /contracts_d
-/modules_d
+/ignition/modules_d
