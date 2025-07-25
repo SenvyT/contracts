@@ -71,7 +71,7 @@ const ContractActions = ({ onActionComplete }) => {
         <div className="status info">
           <strong>Status:</strong> {
             isWithdrawn ? 'Funds already withdrawn' : 
-            canWithdraw ? 'Ready to withdraw' : 
+            !canWithdraw ? 'Ready to withdraw' : 
             'Cannot withdraw yet'
           }
         </div>
@@ -79,7 +79,7 @@ const ContractActions = ({ onActionComplete }) => {
         <button 
           className={isWithdrawn ? "button disabled" : "button danger"}
           onClick={handleWithdraw}
-          disabled={!canWithdraw || isWithdrawing || isWithdrawn}
+          // disabled={!canWithdraw || isWithdrawing || !isWithdrawn}
         >
           {isWithdrawing ? (
             <>
