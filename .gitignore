@@ -77,6 +77,10 @@ frontend/public/ignition/
 # Hardhat Ignition default folder for deployments against a local node
 ignition/deployments/chain-31337
 
+# Ignition deployment folders for different networks
+ignition/deployments/chain-11155111
+ignition/deployments/chain-1
+
 # Build outputs
 /build
 /dist
