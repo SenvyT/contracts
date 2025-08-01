@@ -1,4 +1,5 @@
 {
   "LockSepoliaModule#Lock": "0xACc5FC9388C575BD0008735774c0f9CC25e91F37",
-  "SimpleVaultSepoliaModule#SimpleVault": "0xBd89c7450d9c0b998D23012b468E174a2Fb30522"
+  "SimpleVaultSepoliaModule#SimpleVault": "0xBd89c7450d9c0b998D23012b468E174a2Fb30522",
+  "MyNFTSepoliaModule#MyNFT": "0xAc7631d4eD70dDc739f125570a7470203F800240"
 }

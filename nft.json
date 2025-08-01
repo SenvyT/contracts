@@ -1,0 +1,23 @@
+{
+  "name": "Tiger NFT - Limited Edition",
+  "description": "A majestic tiger NFT artwork. Only 5 copies of this limited edition exist.",
+  "image": "ipfs://bafkreibb63pb73tzlx3xxdpy2irzxt4skeb5ddzi2wylwhl7mzxdiag2t4",
+  "attributes": [
+    {
+      "trait_type": "Edition",
+      "value": "Limited"
+    },
+    {
+      "trait_type": "Max Supply",
+      "value": 1
+    },
+    {
+      "trait_type": "Species",
+      "value": "Tiger"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Epic"
+    }
+  ]
+}

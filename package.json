@@ -18,7 +18,10 @@
     "deploy:token:reset": "npx hardhat ignition deploy ignition/modules/MyTokenLocal.ts --network localhost --reset",
     "deploy:token:sepolia": "npx hardhat ignition deploy ignition/modules/MyTokenSepolia.ts --network sepolia",
     "deploy:token:sepolia:reset": "npx hardhat ignition deploy ignition/modules/MyTokenSepolia.ts --network sepolia --reset",
-
+    "deploy:nft": "npx hardhat ignition deploy ignition/modules/MyNFTLocal.ts --network localhost",
+    "deploy:nft:reset": "npx hardhat ignition deploy ignition/modules/MyNFTLocal.ts --network localhost --reset",
+    "deploy:nft:sepolia": "npx hardhat ignition deploy ignition/modules/MyNFTSepolia.ts --network sepolia",
+    "deploy:nft:sepolia:reset": "npx hardhat ignition deploy ignition/modules/MyNFTSepolia.ts --network sepolia --reset",
     "verify": "npx hardhat verify",
     "verify:sepolia": "npx hardhat verify --network sepolia",
     "console": "npx hardhat console --network localhost",

@@ -1,0 +1,35 @@
+{
+  "collection": {
+    "name": "My Awesome Collection",
+    "description": "A collection of unique digital collectibles",
+    "totalSupply": 5,
+    "generatedAt": "2025-07-30T08:58:58.656Z"
+  },
+  "tokens": [
+    {
+      "tokenId": 1,
+      "imageCid": "QmSampleImage1Hash",
+      "metadataFile": "1.json"
+    },
+    {
+      "tokenId": 2,
+      "imageCid": "QmSampleImage2Hash",
+      "metadataFile": "2.json"
+    },
+    {
+      "tokenId": 3,
+      "imageCid": "QmSampleImage3Hash",
+      "metadataFile": "3.json"
+    },
+    {
+      "tokenId": 4,
+      "imageCid": "QmSampleImage4Hash",
+      "metadataFile": "4.json"
+    },
+    {
+      "tokenId": 5,
+      "imageCid": "QmSampleImage5Hash",
+      "metadataFile": "5.json"
+    }
+  ]
+}

@@ -74,14 +74,8 @@ frontend/public/ignition/
 /coverage
 /coverage.json
 
-# Hardhat Ignition default folder for deployments against a local node
-ignition/deployments/chain-31337
-
-# Ignition deployment folders for different networks
-ignition/deployments/chain-11155111/*
-ignition/deployments/chain-1
-ignition/deployments/chain-11155111/deployed_addresses.json
-ignition/deployments/chain-11155111/journal.jsonl
+# Hardhat Ignition deployment files
+ignition/deployments/
 
 # Build outputs
 /build

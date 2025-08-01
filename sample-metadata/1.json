@@ -1,0 +1,47 @@
+{
+  "name": "Cosmic Warriors #1",
+  "description": "Legendary warriors from the cosmic realm",
+  "image": "ipfs://QmSampleImage1Hash",
+  "external_url": "https://cosmicwarriors.com",
+  "attributes": [
+    {
+      "trait_type": "Background",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Brown"
+    },
+    {
+      "trait_type": "Mouth",
+      "value": "Open"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Common"
+    },
+    {
+      "trait_type": "Power Level",
+      "value": "5000"
+    },
+    {
+      "trait_type": "Token ID",
+      "value": "1"
+    }
+  ],
+  "properties": {
+    "files": [
+      {
+        "uri": "ipfs://QmSampleImage1Hash",
+        "type": "image/png"
+      }
+    ],
+    "category": "image",
+    "creators": [
+      {
+        "address": "0x1234567890123456789012345678901234567890",
+        "share": 100
+      }
+    ]
+  }
+}
