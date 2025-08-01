@@ -75,7 +75,13 @@ frontend/public/ignition/
 /coverage.json
 
 # Hardhat Ignition deployment files
-ignition/deployments/
+# Exclude all deployment files except local development
+ignition/deployments/chain-11155111/
+ignition/deployments/chain-1/
+ignition/deployments/chain-5/
+ignition/deployments/chain-137/
+ignition/deployments/chain-42161/
+ignition/deployments/chain-10/
 
 # Build outputs
 /build
@@ -153,4 +159,3 @@ pids
 
 /contracts_d
 /ignition/modules_d
-/ignition/deployments
