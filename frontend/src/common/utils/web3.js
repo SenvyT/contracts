@@ -9,6 +9,7 @@ class Web3Service {
     this.lockContract = null;
     this.simpleVaultContract = null;
     this.myTokenContract = null;
+    this.myNFTContract = null;
     this.isConnected = false;
     this.lockContractAddress = null;
     this.lockContractABI = null;
@@ -16,6 +17,8 @@ class Web3Service {
     this.simpleVaultContractABI = null;
     this.myTokenContractAddress = null;
     this.myTokenContractABI = null;
+    this.myNFTContractAddress = null;
+    this.myNFTContractABI = null;
     this.connectionKey = 'zerotheft_wallet_connection';
   }
 
@@ -263,6 +266,18 @@ class Web3Service {
         this.myTokenContractABI = null;
       }
 
+      // Try to load MyNFT contract configuration (may not be deployed)
+      try {
+        const myNFTDeploymentInfo = await contractConfig.getDeploymentInfo('mynft');
+        this.myNFTContractAddress = myNFTDeploymentInfo.address;
+        this.myNFTContractABI = myNFTDeploymentInfo.abi;
+        console.log('MyNFT contract address set to:', this.myNFTContractAddress);
+      } catch (myNFTError) {
+        console.warn('MyNFT contract not deployed:', myNFTError.message);
+        this.myNFTContractAddress = null;
+        this.myNFTContractABI = null;
+      }
+
       return true;
     } catch (error) {
       console.error('Failed to load contract configuration:', error);
@@ -305,6 +320,18 @@ class Web3Service {
         signer: !!this.signer,
         address: this.myTokenContractAddress,
         abi: !!this.myTokenContractABI
+      });
+    }
+
+    if (this.signer && this.myNFTContractAddress && this.myNFTContractABI) {
+      console.log('Initializing MyNFT contract with address:', this.myNFTContractAddress);
+      this.myNFTContract = new ethers.Contract(this.myNFTContractAddress, this.myNFTContractABI, this.signer);
+      console.log('MyNFT contract initialized successfully');
+    } else {
+      console.log('Cannot initialize MyNFT contract - missing:', {
+        signer: !!this.signer,
+        address: this.myNFTContractAddress,
+        abi: !!this.myNFTContractABI
       });
     }
   }
@@ -901,7 +928,9 @@ class Web3Service {
       hasProvider: !!this.provider,
       hasSigner: !!this.signer,
       hasLockContract: !!this.lockContract,
-      hasSimpleVaultContract: !!this.simpleVaultContract
+      hasSimpleVaultContract: !!this.simpleVaultContract,
+      hasMyTokenContract: !!this.myTokenContract,
+      hasMyNFTContract: !!this.myNFTContract
     };
   }
 
@@ -967,6 +996,360 @@ class Web3Service {
       console.error('Error getting account info:', error);
       return null;
     }
+  }
+
+  // ===== MyNFT Contract Methods =====
+
+  // Get MyNFT collection information
+  async getMyNFTInfo() {
+    if (!this.signer) return null;
+    
+    // Load contract config if not already loaded
+    if (!this.myNFTContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myNFTContractAddress) {
+        console.warn('MyNFT contract not deployed');
+        return null;
+      }
+      this.initializeContracts();
+    }
+    
+    try {
+      const [name, symbol, maxSupply, currentSupply, mintPrice, isPaused, owner] = await Promise.all([
+        this.myNFTContract.name(),
+        this.myNFTContract.symbol(),
+        this.myNFTContract.maxSupply(),
+        this.myNFTContract.getCurrentTokenCount(),
+        this.myNFTContract.mintPrice(),
+        this.myNFTContract.isPaused(),
+        this.myNFTContract.owner()
+      ]);
+
+      const remainingSupply = maxSupply - currentSupply;
+
+      return {
+        name,
+        symbol,
+        maxSupply: maxSupply.toString(),
+        currentSupply: currentSupply.toString(),
+        remainingSupply: remainingSupply.toString(),
+        mintPrice: mintPrice.toString(),
+        isPaused,
+        owner
+      };
+    } catch (error) {
+      console.error('Error getting MyNFT info:', error);
+      return null;
+    }
+  }
+
+  // Get user's NFT tokens
+  async getMyNFTUserTokens() {
+    if (!this.signer) return null;
+    
+    // Load contract config if not already loaded
+    if (!this.myNFTContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myNFTContractAddress) {
+        console.warn('MyNFT contract not deployed');
+        return null;
+      }
+      this.initializeContracts();
+    }
+    
+    try {
+      const currentAccount = await this.getCurrentAccount();
+      if (!currentAccount) return null;
+
+      const tokenIds = await this.myNFTContract.getTokensByOwner(currentAccount);
+      const tokens = [];
+
+      for (const tokenId of tokenIds) {
+        try {
+          const [owner, tokenURI] = await Promise.all([
+            this.myNFTContract.ownerOf(tokenId),
+            this.myNFTContract.tokenURI(tokenId)
+          ]);
+
+          let metadata = null;
+          try {
+            // Try to fetch metadata from IPFS
+            const response = await fetch(tokenURI.replace('ipfs://', 'https://ipfs.io/ipfs/'));
+            if (response.ok) {
+              metadata = await response.json();
+            }
+          } catch (metadataError) {
+            console.warn('Failed to fetch metadata for token', tokenId, metadataError);
+          }
+
+          tokens.push({
+            id: tokenId.toString(),
+            owner,
+            uri: tokenURI,
+            metadata
+          });
+        } catch (tokenError) {
+          console.warn('Error loading token', tokenId, tokenError);
+        }
+      }
+
+      return tokens;
+    } catch (error) {
+      console.error('Error getting MyNFT user tokens:', error);
+      return null;
+    }
+  }
+
+  // Get all NFT tokens in collection
+  async getAllMyNFTTokens() {
+    if (!this.signer) return null;
+    
+    // Load contract config if not already loaded
+    if (!this.myNFTContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myNFTContractAddress) {
+        console.warn('MyNFT contract not deployed');
+        return null;
+      }
+      this.initializeContracts();
+    }
+    
+    try {
+      const currentSupply = await this.myNFTContract.getCurrentTokenCount();
+      const tokens = [];
+
+      for (let i = 1; i <= currentSupply; i++) {
+        try {
+          const [owner, tokenURI] = await Promise.all([
+            this.myNFTContract.ownerOf(i),
+            this.myNFTContract.tokenURI(i)
+          ]);
+
+          let metadata = null;
+          try {
+            // Try to fetch metadata from IPFS
+            const response = await fetch(tokenURI.replace('ipfs://', 'https://ipfs.io/ipfs/'));
+            if (response.ok) {
+              metadata = await response.json();
+            }
+          } catch (metadataError) {
+            console.warn('Failed to fetch metadata for token', i, metadataError);
+          }
+
+          tokens.push({
+            id: i.toString(),
+            owner,
+            uri: tokenURI,
+            metadata
+          });
+        } catch (tokenError) {
+          console.warn('Error loading token', i, tokenError);
+        }
+      }
+
+      return tokens;
+    } catch (error) {
+      console.error('Error getting all MyNFT tokens:', error);
+      return null;
+    }
+  }
+
+  // Mint NFT
+  async mintMyNFT(to, tokenURI) {
+    if (!this.signer) throw new Error('Wallet not connected');
+    
+    // Load contract config if not already loaded
+    if (!this.myNFTContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myNFTContractAddress) {
+        throw new Error('MyNFT contract is not deployed. Please deploy the contract first.');
+      }
+      this.initializeContracts();
+    }
+    
+    const mintPrice = await this.myNFTContract.mintPrice();
+    const tx = await this.myNFTContract.mint(to, tokenURI, { value: mintPrice });
+    const receipt = await tx.wait();
+    
+    // Get the token ID from the event
+    const event = receipt.logs.find(log => {
+      try {
+        const parsed = this.myNFTContract.interface.parseLog(log);
+        return parsed.name === 'NFTMinted';
+      } catch {
+        return false;
+      }
+    });
+
+    let tokenId = null;
+    if (event) {
+      const parsed = this.myNFTContract.interface.parseLog(event);
+      tokenId = parsed.args.tokenId.toString();
+    }
+    
+    return {
+      success: true,
+      hash: receipt.hash,
+      gasUsed: receipt.gasUsed.toString(),
+      tokenId
+    };
+  }
+
+  
+
+  // Owner mint NFT (free)
+  async ownerMintMyNFT(to, tokenURI) {
+    if (!this.signer) throw new Error('Wallet not connected');
+    
+    // Load contract config if not already loaded
+    if (!this.myNFTContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myNFTContractAddress) {
+        throw new Error('MyNFT contract is not deployed. Please deploy the contract first.');
+      }
+      this.initializeContracts();
+    }
+    
+    const tx = await this.myNFTContract.ownerMint(to, tokenURI);
+    const receipt = await tx.wait();
+    
+    // Get the token ID from the event
+    const event = receipt.logs.find(log => {
+      try {
+        const parsed = this.myNFTContract.interface.parseLog(log);
+        return parsed.name === 'NFTMinted';
+      } catch {
+        return false;
+      }
+    });
+
+    let tokenId = null;
+    if (event) {
+      const parsed = this.myNFTContract.interface.parseLog(event);
+      tokenId = parsed.args.tokenId.toString();
+    }
+    
+    return {
+      success: true,
+      hash: receipt.hash,
+      gasUsed: receipt.gasUsed.toString(),
+      tokenId
+    };
+  }
+
+  // Burn NFT
+  async burnMyNFT(tokenId) {
+    if (!this.signer) throw new Error('Wallet not connected');
+    
+    // Load contract config if not already loaded
+    if (!this.myNFTContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myNFTContractAddress) {
+        throw new Error('MyNFT contract is not deployed. Please deploy the contract first.');
+      }
+      this.initializeContracts();
+    }
+    
+    const tx = await this.myNFTContract.burn(tokenId);
+    const receipt = await tx.wait();
+    
+    return {
+      success: true,
+      hash: receipt.hash,
+      gasUsed: receipt.gasUsed.toString()
+    };
+  }
+
+  // Set mint price (owner only)
+  async setMyNFTMintPrice(newPrice) {
+    if (!this.signer) throw new Error('Wallet not connected');
+    
+    // Load contract config if not already loaded
+    if (!this.myNFTContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myNFTContractAddress) {
+        throw new Error('MyNFT contract is not deployed. Please deploy the contract first.');
+      }
+      this.initializeContracts();
+    }
+    
+    const tx = await this.myNFTContract.setMintPrice(newPrice);
+    const receipt = await tx.wait();
+    
+    return {
+      success: true,
+      hash: receipt.hash,
+      gasUsed: receipt.gasUsed.toString()
+    };
+  }
+
+  // Set max supply (owner only)
+  async setMyNFTMaxSupply(newMaxSupply) {
+    if (!this.signer) throw new Error('Wallet not connected');
+    
+    // Load contract config if not already loaded
+    if (!this.myNFTContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myNFTContractAddress) {
+        throw new Error('MyNFT contract is not deployed. Please deploy the contract first.');
+      }
+      this.initializeContracts();
+    }
+    
+    const tx = await this.myNFTContract.setMaxSupply(newMaxSupply);
+    const receipt = await tx.wait();
+    
+    return {
+      success: true,
+      hash: receipt.hash,
+      gasUsed: receipt.gasUsed.toString()
+    };
+  }
+
+  // Set paused state (owner only)
+  async setMyNFTPaused(paused) {
+    if (!this.signer) throw new Error('Wallet not connected');
+    
+    // Load contract config if not already loaded
+    if (!this.myNFTContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myNFTContractAddress) {
+        throw new Error('MyNFT contract is not deployed. Please deploy the contract first.');
+      }
+      this.initializeContracts();
+    }
+    
+    const tx = await this.myNFTContract.setPaused(paused);
+    const receipt = await tx.wait();
+    
+    return {
+      success: true,
+      hash: receipt.hash,
+      gasUsed: receipt.gasUsed.toString()
+    };
+  }
+
+  // Withdraw funds (owner only)
+  async withdrawMyNFT() {
+    if (!this.signer) throw new Error('Wallet not connected');
+    
+    // Load contract config if not already loaded
+    if (!this.myNFTContract) {
+      const configLoaded = await this.loadContractConfigs();
+      if (!configLoaded || !this.myNFTContractAddress) {
+        throw new Error('MyNFT contract is not deployed. Please deploy the contract first.');
+      }
+      this.initializeContracts();
+    }
+    
+    const tx = await this.myNFTContract.withdraw();
+    const receipt = await tx.wait();
+    
+    return {
+      success: true,
+      hash: receipt.hash,
+      gasUsed: receipt.gasUsed.toString()
+    };
   }
 }
 

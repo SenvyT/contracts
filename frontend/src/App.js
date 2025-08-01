@@ -4,6 +4,7 @@ import { HomePage } from './common';
 import { LockContractPage } from './contracts/lock';
 import { SimpleVaultPage } from './contracts/simplevault';
 import { MyTokenPage } from './contracts/mytoken';
+import { MyNFTPage } from './contracts/mynft';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/contract/lock" element={<LockContractPage />} />
         <Route path="/contract/simplevault" element={<SimpleVaultPage />} />
         <Route path="/contract/mytoken" element={<MyTokenPage />} />
+        <Route path="/contract/mynft" element={<MyNFTPage />} />
       </Routes>
     </Router>
   );

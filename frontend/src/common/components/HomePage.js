@@ -26,6 +26,12 @@ const HomePage = () => {
       name: 'MyToken Contract',
       status: 'active',
       icon: '🪙'
+    },
+    {
+      id: 'mynft',
+      name: 'MyNFT Collection',
+      status: 'active',
+      icon: '🎨'
     }
   ];
 

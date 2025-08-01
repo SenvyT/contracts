@@ -168,6 +168,10 @@ code {
   text-align: center;
   color: white;
   margin-bottom: 32px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 32px 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
 }
 
 .header h1 {
@@ -478,6 +482,485 @@ code {
   background: #e0a800;
 }
 
+/* NFT Gallery Styles */
+.collection-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+}
+
+.collection-icon {
+  font-size: 3rem;
+}
+
+.collection-details h2 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.collection-symbol {
+  margin: 4px 0 0 0;
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-item {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #e9ecef;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.progress-bar {
+  margin-bottom: 24px;
+}
+
+.progress-label {
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.progress-track {
+  width: 100%;
+  height: 12px;
+  background: #e9ecef;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+}
+
+.contract-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.status-badge {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.status-badge.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.paused {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.user-tokens {
+  margin-top: 24px;
+}
+
+.tokens-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.token-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.token-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.token-card.owned {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.token-id {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.token-uri {
+  font-size: 0.8rem;
+  color: #6c757d;
+  word-break: break-all;
+}
+
+/* NFT Actions Styles */
+.current-price {
+  background: #e3f2fd;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  text-align: center;
+  border: 1px solid #bbdefb;
+}
+
+.action-section {
+  margin-bottom: 32px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.action-section h4 {
+  margin: 0 0 16px 0;
+  color: #333;
+}
+
+.owner-section {
+  background: #fff3cd;
+  border-color: #ffeaa7;
+}
+
+.owner-notice {
+  text-align: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  color: #6c757d;
+}
+
+/* NFT Gallery Styles */
+.gallery-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border: 1px solid #e9ecef;
+  background: white;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.filter-btn:hover {
+  background: #f8f9fa;
+}
+
+.filter-btn.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.token-image {
+  width: 100%;
+  height: 200px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.token-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.token-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  font-size: 2rem;
+}
+
+.token-placeholder p {
+  margin: 8px 0 0 0;
+  font-size: 0.9rem;
+}
+
+.token-placeholder-large {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  font-size: 4rem;
+  height: 400px;
+}
+
+.token-placeholder-large p {
+  margin: 16px 0 0 0;
+  font-size: 1.1rem;
+}
+
+.empty-gallery {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6c757d;
+  z-index: 1;
+}
+
+.token-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px;
+}
+
+.token-detail-image {
+  text-align: center;
+}
+
+.token-detail-image img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.token-detail-info h2 {
+  margin: 0 0 16px 0;
+  color: #333;
+}
+
+.token-description {
+  color: #6c757d;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.token-details {
+  margin-bottom: 24px;
+}
+
+.detail-item {
+  margin-bottom: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-item a {
+  color: #667eea;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.detail-item a:hover {
+  text-decoration: underline;
+}
+
+.token-attributes {
+  margin-top: 24px;
+}
+
+.attributes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.attribute-item {
+  background: #f8f9fa;
+  padding: 8px;
+  border-radius: 6px;
+  text-align: center;
+  border: 1px solid #e9ecef;
+}
+
+.attribute-type {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-bottom: 4px;
+}
+
+.attribute-value {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Tab Navigation Styles */
+.tab-navigation {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e9ecef;
+  overflow-x: auto;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 16px 20px;
+  border-radius: 12px 12px 0 0;
+  border-bottom: none;
+}
+
+.tab-button {
+  padding: 12px 24px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.tab-button.active {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  font-weight: 600;
+}
+
+.tab-content {
+  min-height: 400px;
+}
+
+.help-section {
+  margin-top: 40px;
+  padding: 24px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.help-section h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+}
+
+.help-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.help-item {
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.help-item h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.help-item p {
+  margin: 0;
+  color: #6c757d;
+  line-height: 1.5;
+}
+
 /* Responsive adjustments for SimpleVault page */
 @media (max-width: 768px) {
   .container {
@@ -530,5 +1013,67 @@ code {
   
   .close-button {
     margin-left: 0;
+  }
+}
+
+/* Responsive adjustments for NFT page */
+@media (max-width: 768px) {
+  .collection-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .contract-status {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  
+  .gallery-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-buttons {
+    justify-content: center;
+  }
+  
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  
+  .token-detail {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .tab-navigation {
+    flex-wrap: wrap;
+  }
+  
+  .tab-button {
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  .help-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-content {
+    margin: 10px;
+    max-height: 95vh;
+  }
+  
+  .token-detail {
+    padding: 16px;
+  }
+  
+  .attributes-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 } 

@@ -39,6 +39,16 @@ class ContractConfig {
         },
         address: null,
         abi: null
+      },
+      mynft: {
+        artifactPath: '/artifacts/contracts/MyNFT.sol/MyNFT.json',
+        moduleNames: {
+          local: 'MyNFTLocalModule#MyNFT',
+          testing: 'MyNFTSepoliaModule#MyNFT',
+          production: 'MyNFTSepoliaModule#MyNFT' // adjust if needed
+        },
+        address: null,
+        abi: null
       }
     };
   }
