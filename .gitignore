@@ -78,7 +78,7 @@ frontend/public/ignition/
 ignition/deployments/chain-31337
 
 # Ignition deployment folders for different networks
-ignition/deployments/chain-11155111
+ignition/deployments/chain-11155111/*
 ignition/deployments/chain-1
 
 # Build outputs
