@@ -6,11 +6,15 @@ const MyTokenLocalModule = buildModule("MyTokenLocalModule", (m) => {
   const tokenName = "My Local Token";
   const tokenSymbol = "MLT";
   const initialSupply = 1000000; // 1 million tokens
+  const maxSupply = 10000000; // 10 million tokens max
+  const tokenPrice = 1000000000000000n; // 0.001 ETH per token
 
   const myToken = m.contract("MyToken", [
     tokenName,
     tokenSymbol,
-    initialSupply
+    initialSupply,
+    maxSupply,
+    tokenPrice
   ]);
 
   return { myToken };
